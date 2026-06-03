@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: taskflow
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: harbor.cs.hs-fulda.de/cloud-computing/helm
+    chart: taskflow
+    targetRevision: 0.1.0 # <-- replace with the actual chart version you found
+    helm:
+      parameters:
+        - name: "postgresql.persistence.storageClass"
+          value: csi-cinder-delete
+        - name: "frontend.service.type"
+          value: LoadBalancer
+  destination:
+    name: in-cluster
+    namespace: taskflow
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+
