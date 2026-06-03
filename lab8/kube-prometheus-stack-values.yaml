@@ -1,0 +1,36 @@
+grafana:
+  enabled: true
+  service:
+    type: LoadBalancer
+prometheus:
+  prometheusSpec:
+    retention: 30d
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          resources:
+            requests:
+              storage: 10Gi
+
+# RKE2 secures its services, you must explicitly tell Prometheus how to scrape them.
+
+# Disable default rules that may conflict or require specific RKE2 paths
+defaultRules:
+  create: true
+  rules:
+    etcd: false # We will scrape RKE2 etcd specifically
+
+kubeControllerManager:
+  enabled: false # Controller manager on RKE2 listens locally
+
+kubeScheduler:
+  enabled: false # Scheduler on RKE2 listens locally
+
+kubeEtcd:
+  enabled: true
+  service:
+    enabled: true
+    port: 2381
+    targetPort: 2381
+  # RKE2 etcd uses TLS certificates located on the nodes
+  # Ensure these endpoints are matched to your RKE2 etcd configuration

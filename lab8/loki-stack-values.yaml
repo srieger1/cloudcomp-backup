@@ -1,0 +1,9 @@
+loki:
+  singleBinary:
+    persistence:
+      enabled: true
+      size: 10Gi
+      storageClass: csi-cinder-delete 
+# Disable Prometheus stack, keep only Loki and Alloy
+kube-prometheus-stack:
+  enabled: false
